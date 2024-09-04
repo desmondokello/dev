@@ -27,10 +27,10 @@ public class GlobalExceptionHandler {
     }
 
     // Other exception handlers...
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
+//    @ExceptionHandler(ResourceNotFoundException.class)
+//    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex) {
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {

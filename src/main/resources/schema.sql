@@ -1,47 +1,96 @@
--- Create Product table
-CREATE TABLE Product (
-                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         name VARCHAR(255) NOT NULL,
-                         description TEXT,
-                         price DECIMAL(10, 2) NOT NULL,
-                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Create Product Table
+CREATE TABLE product_table (
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                               name VARCHAR(255) NOT NULL,
+                               description TEXT NOT NULL,
+                               price DECIMAL(10, 2) NOT NULL,
+                               stock INT NOT NULL,
+                               created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                               updated_at DATETIME DEFAULT NULL,
+                               deleted_flag TINYINT(1) DEFAULT 0,
+                               deleted_at DATETIME DEFAULT NULL,
+                               created_by VARCHAR(255) DEFAULT NULL,
+                               created_date DATETIME DEFAULT NULL,
+                               last_modified_by VARCHAR(255) DEFAULT NULL,
+                               last_modified_date DATETIME DEFAULT NULL,
+                               deleted_by VARCHAR(255) DEFAULT NULL,
+                               deleted_date DATETIME DEFAULT NULL
 );
 
--- Create Customer table
-CREATE TABLE Customer (
-                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                          name VARCHAR(255) NOT NULL,
-                          email VARCHAR(255) UNIQUE NOT NULL,
-                          phone VARCHAR(20),
-                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Create Customer Table
+CREATE TABLE customer_table (
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                name VARCHAR(255) NOT NULL,
+                                email VARCHAR(255) NOT NULL UNIQUE,
+                                phone VARCHAR(50) NOT NULL,
+                                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                updated_at DATETIME DEFAULT NULL,
+                                deleted_flag TINYINT(1) DEFAULT 0,
+                                deleted_at DATETIME DEFAULT NULL,
+                                created_by VARCHAR(255) DEFAULT NULL,
+                                created_date DATETIME DEFAULT NULL,
+                                last_modified_by VARCHAR(255) DEFAULT NULL,
+                                last_modified_date DATETIME DEFAULT NULL,
+                                deleted_by VARCHAR(255) DEFAULT NULL,
+                                deleted_date DATETIME DEFAULT NULL
 );
 
--- Create Inventory table
-CREATE TABLE Inventory (
-                           id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                           product_id BIGINT,
-                           quantity INT NOT NULL,
-                           location VARCHAR(255),
-                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                           FOREIGN KEY (product_id) REFERENCES Product(id)
+-- Create Inventory Table
+CREATE TABLE inventory_table (
+                                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                 product_id BIGINT NOT NULL,
+                                 quantity INT NOT NULL,
+                                 location VARCHAR(255) NOT NULL,
+                                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                 updated_at DATETIME DEFAULT NULL,
+                                 deleted_flag TINYINT(1) DEFAULT 0,
+                                 deleted_at DATETIME DEFAULT NULL,
+                                 created_by VARCHAR(255) DEFAULT NULL,
+                                 created_date DATETIME DEFAULT NULL,
+                                 last_modified_by VARCHAR(255) DEFAULT NULL,
+                                 last_modified_date DATETIME DEFAULT NULL,
+                                 deleted_by VARCHAR(255) DEFAULT NULL,
+                                 deleted_date DATETIME DEFAULT NULL,
+                                 FOREIGN KEY (product_id) REFERENCES product_table(id)
 );
 
--- Create Order table
-CREATE TABLE `Order` (
-                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         customer_id BIGINT,
-                         order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                         total DECIMAL(10, 2) NOT NULL,
-                         FOREIGN KEY (customer_id) REFERENCES Customer(id)
+-- Create Order Table
+CREATE TABLE order_table (
+                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                             customer_id BIGINT NOT NULL,
+                             total_price DECIMAL(10, 2) NOT NULL,
+                             status VARCHAR(50) NOT NULL,
+                             order_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                             updated_at DATETIME DEFAULT NULL,
+                             deleted_flag TINYINT(1) DEFAULT 0,
+                             deleted_at DATETIME DEFAULT NULL,
+                             created_by VARCHAR(255) DEFAULT NULL,
+                             created_date DATETIME DEFAULT NULL,
+                             last_modified_by VARCHAR(255) DEFAULT NULL,
+                             last_modified_date DATETIME DEFAULT NULL,
+                             deleted_by VARCHAR(255) DEFAULT NULL,
+                             deleted_date DATETIME DEFAULT NULL,
+                             FOREIGN KEY (customer_id) REFERENCES customer_table(id)
 );
 
--- Create OrderItem table
-CREATE TABLE OrderItem (
-                           id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                           order_id BIGINT,
-                           product_id BIGINT,
-                           quantity INT NOT NULL,
-                           price DECIMAL(10, 2) NOT NULL,
-                           FOREIGN KEY (order_id) REFERENCES `Order`(id),
-                           FOREIGN KEY (product_id) REFERENCES Product(id)
+-- Create OrderItem Table
+CREATE TABLE order_item_table (
+                                  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                  order_id BIGINT NOT NULL,
+                                  product_id BIGINT NOT NULL,
+                                  quantity INT NOT NULL,
+                                  price DECIMAL(10, 2) NOT NULL,
+                                  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                  updated_at DATETIME DEFAULT NULL,
+                                  deleted_flag TINYINT(1) DEFAULT 0,
+                                  deleted_at DATETIME DEFAULT NULL,
+                                  created_by VARCHAR(255) DEFAULT NULL,
+                                  created_date DATETIME DEFAULT NULL,
+                                  last_modified_by VARCHAR(255) DEFAULT NULL,
+                                  last_modified_date DATETIME DEFAULT NULL,
+                                  deleted_by VARCHAR(255) DEFAULT NULL,
+                                  deleted_date DATETIME DEFAULT NULL,
+                                  FOREIGN KEY (order_id) REFERENCES order_table(id),
+                                  FOREIGN KEY (product_id) REFERENCES product_table(id)
 );

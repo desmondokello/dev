@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 
 // Constructors, Getters, and Setters...
 @Getter
@@ -27,9 +29,11 @@ public class ProductDto {
 
     @NotNull(message = "Product price is mandatory")
     @Min(value = 0, message = "Product price must be greater than or equal to zero")
-    private double price;
+//    private double price; // Ensure correct use of DECIMAL
+    private BigDecimal price;
 
     @Min(value = 0, message = "Product stock must be greater than or equal to zero")
     private int stock;
+
 
 }

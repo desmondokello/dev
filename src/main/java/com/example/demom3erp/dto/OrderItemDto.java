@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,18 +16,21 @@ import lombok.Setter;
 public class OrderItemDto {
 
     private Long id;
+//
+//    @Min(1)
+//    private int quantity;
 
-    @NotNull
+    @NotNull(message = "Order ID is mandatory")
     private Long orderId;
 
-    @NotNull
+    @NotNull(message = "Product ID is mandatory")
     private Long productId;
 
-    @Min(1)
+    @Min(value = 0, message = "Quantity must be greater than or equal to zero")
     private int quantity;
 
-    @Min(0)
-    private double price;
+    @Min(value = 0, message = "Price must be greater than or equal to zero")
+    private BigDecimal price;
 
 
 }

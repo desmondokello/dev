@@ -1,16 +1,23 @@
 package com.example.demom3erp.entity;
 
+import com.example.demom3erp.config.Auditable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "order_item")
+@Table(name = "ORDER_ITEM_TABLE")
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderItem {
+@SQLDelete(sql = "UPDATE order_items SET deleted_flag = true, deleted_at = NOW() WHERE id = ?")
+@Where(clause = "deleted_flag = false")
+public class OrderItem extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +27,6 @@ public class OrderItem {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-//    @Column(name = "product_id", nullable = false)
-//    private Long productId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -30,10 +34,30 @@ public class OrderItem {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @Column(name = "price", nullable = false)
-    private double price;
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 
-    public OrderItem(Order order, Product product, int quantity, double price) {
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    private LocalDateTime createdAt = LocalDateTime.now();
+//
+//
+//    @Column(name = "updated_at")
+//    private LocalDateTime updatedAt;
+
+//    @Column(name = "is_deleted", columnDefinition = "TINYINT(1) DEFAULT 0")
+//    private boolean isDeleted;
+//    @Column(name = "deleted_flag", nullable = false)
+//    private boolean deletedFlag = false;
+//
+//    @Column(name = "deleted_at")
+//    private LocalDateTime deletedAt;
+//
+//    @PreUpdate
+//    protected void onUpdate() {
+//        updatedAt = LocalDateTime.now();
+//    }
+
+    public OrderItem(Order order, Product product, int quantity, BigDecimal price) {
         this.order = order;
         this.product = product;
         this.quantity = quantity;

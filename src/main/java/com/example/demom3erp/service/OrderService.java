@@ -6,6 +6,8 @@ import com.example.demom3erp.entity.*;
 import com.example.demom3erp.exception.InsufficientInventoryException;
 import com.example.demom3erp.exception.ResourceNotFoundException;
 import com.example.demom3erp.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(InventoryService.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -95,14 +99,16 @@ public class OrderService {
                 })
                 .collect(Collectors.toList());
 
-        double total = calculateTotal(items);
+        BigDecimal total = calculateTotal(items);
 
         return new Order(customer, items, total, orderDto.getStatus());
     }
 
     // Calculate the total amount for an order
-    private double calculateTotal(List<OrderItem> items) {
-            return items.stream().mapToDouble(item -> item.getQuantity() * item.getPrice()).sum();
+    private BigDecimal calculateTotal(List<OrderItem> items) {
+//            return items.stream().mapToDouble(item -> item.getQuantity() * item.getPrice()).sum();
+        return items.stream().map(item->item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         }
 
     // Confirm an order by validating stock and changing its status
@@ -128,13 +134,18 @@ public class OrderService {
         return convertToDto(confirmedOrder);
     }
 
+    @Transactional(readOnly = true)
     public List<OrderDto> getAllOrders() {
+        logger.info("Fetching All orders");
         return orderRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
+
+    @Transactional(readOnly = true)
     public OrderDto getOrderById(Long orderId) {
+        logger.info("Fetching order with id: {}", orderId);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         return convertToDto(order);
@@ -214,12 +225,13 @@ public class OrderService {
         updateOrderItems(existingOrder, orderDto.getOrderItems());
 
         // Recalculate total
-        double newTotal = calculateTotal(existingOrder.getOrderItems());
+        BigDecimal newTotal = calculateTotal(existingOrder.getOrderItems());
         existingOrder.setTotalPrice(newTotal);
 
         Order updatedOrder = orderRepository.save(existingOrder);
         return convertToDto(updatedOrder);
     }
+
 
     private void updateOrderItems(Order existingOrder, List<OrderItemDto> newItems) {
         // Delete old items from the database
@@ -248,9 +260,12 @@ public class OrderService {
     }
 
     // Delete an order
+    @Transactional
     public void deleteOrder(Long orderId) {
+        logger.info("Deleting order with id: {}", orderId);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        order.setDeletedFlag(true);
         orderRepository.delete(order);
     }
 }

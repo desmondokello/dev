@@ -4,7 +4,7 @@ package com.example.demom3erp.controllers;
 import com.example.demom3erp.dto.ProductDto;
 import com.example.demom3erp.service.ProductService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +13,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+
 
     @GetMapping
-    public List<ProductDto> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        List<ProductDto> products = productService.getAllProducts();
+        if (products.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
@@ -46,5 +51,6 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
 }
 

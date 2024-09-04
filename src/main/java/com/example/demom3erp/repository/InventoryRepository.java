@@ -22,6 +22,5 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
 
     // Custom query to find total available stock for a product
-
     int countByProduct(Product product);
 }
